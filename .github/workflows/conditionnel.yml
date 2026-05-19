@@ -1,23 +1,30 @@
-name: TP2 - Workflow Conditionnel
+
+name: TP2 - Workflow Conditionnel et Facultatif
 
 on: [push, workflow_dispatch]
 
-# Définition globale de la variable water (Exercice principal)
 env:
   water: cold
+  fire: Global (Niveau Workflow)
 
 jobs:
   job-affichage:
     runs-on: ubuntu-latest
     steps:
-      # Exercice principal : Afficher une variable du contexte GitHub
-      - name: Afficher le contexte GitHub (Auteur)
-        run: echo "Le workflow a été déclenché par l'utilisateur ${{ github.actor }}"
+      - name: Afficher le contexte GitHub
+        run: echo "Le workflow a ete declenche par ${{ github.actor }}"
 
   job-conditionnel:
     runs-on: ubuntu-latest
-    # Exercice principal : Conditionner le job pour qu'il ne s'exécute que si water == cold
-    if: ${{ env.water == 'cold' }}
+    if: env.water == 'cold'
     steps:
-      - name: Vérification de l'eau
-        run: echo "L'eau est bien cold ! Ce job s'exécute."
+      - name: Verification de l eau
+        run: echo "L eau est bien cold ! Ce job s execute."
+
+  job-facultatif-precedence:
+    runs-on: ubuntu-latest
+    env:
+      fire: Local (Niveau Job)
+    steps:
+      - name: Afficher la variable fire
+        run: echo "La valeur de fire est : ${{ env.fire }}"
