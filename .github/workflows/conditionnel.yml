@@ -15,7 +15,7 @@ jobs:
 
   job-conditionnel:
     runs-on: ubuntu-latest
-    if: env.water == 'cold'
+    if: ${{ github.env.water == 'cold' }}
     steps:
       - name: Verification de l eau
         run: echo "L eau est bien cold"
