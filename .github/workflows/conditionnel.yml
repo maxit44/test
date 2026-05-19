@@ -1,11 +1,10 @@
-
 name: TP2 - Workflow Conditionnel et Facultatif
 
 on: [push, workflow_dispatch]
 
 env:
   water: cold
-  fire: Global (Niveau Workflow)
+  fire: Global
 
 jobs:
   job-affichage:
@@ -19,12 +18,12 @@ jobs:
     if: env.water == 'cold'
     steps:
       - name: Verification de l eau
-        run: echo "L eau est bien cold ! Ce job s execute."
+        run: echo "L eau est bien cold"
 
   job-facultatif-precedence:
     runs-on: ubuntu-latest
     env:
-      fire: Local (Niveau Job)
+      fire: Local
     steps:
       - name: Afficher la variable fire
-        run: echo "La valeur de fire est : ${{ env.fire }}"
+        run: echo "La valeur de fire est ${{ env.fire }}"
