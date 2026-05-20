@@ -1,0 +1,54 @@
+name: Pipeline Multiplateformes et Multiversions TP5
+
+on:
+  push:
+    branches-ignore:
+      - 'main'
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  verification:
+    # On utilise la matrice pour définir dynamiquement les OS
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      matrix:
+        # Exercice principal + facultatif : on teste sur Ubuntu et Windows
+        os: [ubuntu-24.04, ubuntu-22.04, windows-latest]
+        # Exercice principal : on croise avec les 3 versions de Python
+        python-version: ['3.12', '3.13', '3.14-dev']
+
+    steps:
+    - name: Recuperer le code
+      uses: actions/checkout@v3
+
+    - name: Configurer Python (${{ matrix.python-version }})
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Installer les outils de test et linting
+      run: pip install pytest pytest-cov flake8
+
+    - name: Etape Linting (Uniquement sur Linux pour eviter les bugs de chemins Windows)
+      if: startsWith(matrix.os, 'ubuntu')
+      run: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+
+    - name: Etape Tests Unitaires
+      run: python3 -m pytest --cov=calculs --cov-report=term-missing
+      # Sous Windows, la commande par défaut est parfois 'python', on s'assure que ça passe partout :
+      continue-on-error: false
+
+  build:
+    needs: verification
+    runs-on: ubuntu-24.04
+    steps:
+    - name: Recuperer le code
+      uses: actions/checkout@v3
+
+    - name: Simulation du Build final
+      run: |
+        echo "Building and packaging artifacts after cross-platform validation..."
+        python3 -m compileall .
